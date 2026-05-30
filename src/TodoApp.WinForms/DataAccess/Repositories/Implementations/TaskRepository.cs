@@ -158,7 +158,7 @@ namespace TodoApp.WinForms.DataAccess.Repositories
                 Name = reader["name"].ToString(),
                 Description = DBNullValueCheck<string>(reader["description"]),
                 DueDate = DBNullValueCheck<DateTime?>(reader["due_date"]),
-                CreatedAt = Convert.ToDateTime(reader["created_at"]),
+                CreatedAt = Convert.ToDateTime(reader["created_at"]).ToLocalTime(),
 
                 CategoryId = DBNullValueCheck<int?>(reader["category_id"]),
                 CategoryName = DBNullValueCheck<string>(reader["category_name"]) ?? "No Category",

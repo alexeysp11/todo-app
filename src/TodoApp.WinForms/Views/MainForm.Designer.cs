@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pnlTop = new System.Windows.Forms.Panel();
             this.btnManageCategories = new System.Windows.Forms.Button();
             this.lblCategoryFilter = new System.Windows.Forms.Label();
@@ -39,6 +41,13 @@
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnEdit = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
+            this.dgvcTaskName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvcDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvcCategoryName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvcPriorityName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvcStatusName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvcDueDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvcCreatedAt = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlTop.SuspendLayout();
             this.statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvTasks)).BeginInit();
@@ -107,6 +116,14 @@
             this.dgvTasks.AllowUserToAddRows = false;
             this.dgvTasks.AllowUserToDeleteRows = false;
             this.dgvTasks.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvTasks.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dgvcTaskName,
+            this.dgvcDescription,
+            this.dgvcCategoryName,
+            this.dgvcPriorityName,
+            this.dgvcStatusName,
+            this.dgvcDueDate,
+            this.dgvcCreatedAt});
             this.dgvTasks.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvTasks.Location = new System.Drawing.Point(0, 35);
             this.dgvTasks.Name = "dgvTasks";
@@ -159,6 +176,76 @@
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
+            // dgvcTaskName
+            // 
+            this.dgvcTaskName.DataPropertyName = "Name";
+            this.dgvcTaskName.HeaderText = "Task name";
+            this.dgvcTaskName.MinimumWidth = 6;
+            this.dgvcTaskName.Name = "dgvcTaskName";
+            this.dgvcTaskName.ReadOnly = true;
+            this.dgvcTaskName.Width = 125;
+            // 
+            // dgvcDescription
+            // 
+            this.dgvcDescription.DataPropertyName = "Description";
+            this.dgvcDescription.HeaderText = "Description";
+            this.dgvcDescription.MinimumWidth = 6;
+            this.dgvcDescription.Name = "dgvcDescription";
+            this.dgvcDescription.ReadOnly = true;
+            this.dgvcDescription.Width = 125;
+            // 
+            // dgvcCategoryName
+            // 
+            this.dgvcCategoryName.DataPropertyName = "CategoryName";
+            this.dgvcCategoryName.FillWeight = 25F;
+            this.dgvcCategoryName.HeaderText = "Category";
+            this.dgvcCategoryName.MinimumWidth = 6;
+            this.dgvcCategoryName.Name = "dgvcCategoryName";
+            this.dgvcCategoryName.ReadOnly = true;
+            this.dgvcCategoryName.Width = 80;
+            // 
+            // dgvcPriorityName
+            // 
+            this.dgvcPriorityName.DataPropertyName = "PriorityName";
+            this.dgvcPriorityName.FillWeight = 25F;
+            this.dgvcPriorityName.HeaderText = "Priority";
+            this.dgvcPriorityName.MinimumWidth = 6;
+            this.dgvcPriorityName.Name = "dgvcPriorityName";
+            this.dgvcPriorityName.ReadOnly = true;
+            this.dgvcPriorityName.Width = 80;
+            // 
+            // dgvcStatusName
+            // 
+            this.dgvcStatusName.DataPropertyName = "StatusName";
+            this.dgvcStatusName.FillWeight = 25F;
+            this.dgvcStatusName.HeaderText = "Status";
+            this.dgvcStatusName.MinimumWidth = 6;
+            this.dgvcStatusName.Name = "dgvcStatusName";
+            this.dgvcStatusName.ReadOnly = true;
+            this.dgvcStatusName.Width = 80;
+            // 
+            // dgvcDueDate
+            // 
+            this.dgvcDueDate.DataPropertyName = "DueDate";
+            dataGridViewCellStyle1.Format = "dd.MM.yyyy";
+            this.dgvcDueDate.DefaultCellStyle = dataGridViewCellStyle1;
+            this.dgvcDueDate.HeaderText = "Due date";
+            this.dgvcDueDate.MinimumWidth = 6;
+            this.dgvcDueDate.Name = "dgvcDueDate";
+            this.dgvcDueDate.ReadOnly = true;
+            this.dgvcDueDate.Width = 125;
+            // 
+            // dgvcCreatedAt
+            // 
+            this.dgvcCreatedAt.DataPropertyName = "CreatedAt";
+            dataGridViewCellStyle2.Format = "dd.MM.yyyy HH:mm";
+            this.dgvcCreatedAt.DefaultCellStyle = dataGridViewCellStyle2;
+            this.dgvcCreatedAt.HeaderText = "Created at";
+            this.dgvcCreatedAt.MinimumWidth = 6;
+            this.dgvcCreatedAt.Name = "dgvcCreatedAt";
+            this.dgvcCreatedAt.ReadOnly = true;
+            this.dgvcCreatedAt.Width = 125;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -195,6 +282,13 @@
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnEdit;
         private System.Windows.Forms.Button btnAdd;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvcTaskName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvcDescription;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvcCategoryName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvcPriorityName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvcStatusName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvcDueDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvcCreatedAt;
     }
 }
 

@@ -29,7 +29,7 @@ namespace TodoApp.WinForms.Views
         private async void MainForm_Load(object sender, EventArgs e)
         {
             _logger.Information("Loading the main interface form.");
-            
+            dgvTasks.AutoGenerateColumns = false;
             await Task.WhenAll(LoadCategoriesFilterAsync(), RefreshTaskListAsync());
         }
 
@@ -41,16 +41,12 @@ namespace TodoApp.WinForms.Views
                 statusStrip.Text = "Loading tasks from database...";
 
                 IEnumerable<TodoTaskEntity> tasks = await _taskService.GetAllTasksAsync();
-
                 if (cmbFilterCategory.SelectedValue is int selectedCategoryId && selectedCategoryId > 0)
                 {
                     tasks = tasks.Where(t => t.CategoryId == selectedCategoryId);
                 }
-
-                dgvTasks.DataSource = null;
                 dgvTasks.DataSource = tasks.ToList();
 
-                ConfigureGridColumns();
                 statusStrip.Text = $"Total tasks: {dgvTasks.Rows.Count}";
             }
             catch (Exception ex)
@@ -91,40 +87,6 @@ namespace TodoApp.WinForms.Views
         private async void CmbFilterCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
             await RefreshTaskListAsync();
-        }
-
-        private void ConfigureGridColumns()
-        {
-            if (dgvTasks.Columns.Count == 0) return;
-
-            // Hide technical ID columns
-            string[] technicalColumns = { "Id", "CategoryId", "PriorityId", "StatusId" };
-            foreach (string col in technicalColumns)
-            {
-                if (dgvTasks.Columns[col] != null)
-                    dgvTasks.Columns[col].Visible = false;
-            }
-
-            // Set human-readable headers
-            if (dgvTasks.Columns["Name"] != null) dgvTasks.Columns["Name"].HeaderText = "Task name";
-            if (dgvTasks.Columns["Description"] != null) dgvTasks.Columns["Description"].HeaderText = "Description";
-            if (dgvTasks.Columns["CategoryName"] != null) dgvTasks.Columns["CategoryName"].HeaderText = "Category";
-            if (dgvTasks.Columns["PriorityName"] != null) dgvTasks.Columns["PriorityName"].HeaderText = "Priority";
-            if (dgvTasks.Columns["StatusName"] != null) dgvTasks.Columns["StatusName"].HeaderText = "Status";
-            if (dgvTasks.Columns["DueDate"] != null) dgvTasks.Columns["DueDate"].HeaderText = "Due date";
-            if (dgvTasks.Columns["CreatedAt"] != null) dgvTasks.Columns["CreatedAt"].HeaderText = "Created at";
-
-            // Establish strict visible order via DisplayIndex (0-based)
-            int currentOrder = 0;
-            string[] visibleColumnsOrder = { "Name", "Description", "CategoryName", "PriorityName", "StatusName", "DueDate", "CreatedAt" };
-
-            foreach (string columnName in visibleColumnsOrder)
-            {
-                if (dgvTasks.Columns[columnName] != null && dgvTasks.Columns[columnName].Visible)
-                {
-                    dgvTasks.Columns[columnName].DisplayIndex = currentOrder++;
-                }
-            }
         }
 
         private async void btnDelete_Click(object sender, EventArgs e)
