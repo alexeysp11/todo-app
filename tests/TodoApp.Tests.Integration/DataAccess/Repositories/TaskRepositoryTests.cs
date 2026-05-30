@@ -77,7 +77,7 @@ namespace TodoApp.Tests.Integration.DataAccess.Repositories
                 .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(1)))
                 .WhenTypeIs<DateTime>());
 
-            result.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(10));
+            result.CreatedAt.Should().BeCloseTo(DateTime.UtcNow.ToLocalTime(), TimeSpan.FromSeconds(10));
         }
 
         [Fact]
