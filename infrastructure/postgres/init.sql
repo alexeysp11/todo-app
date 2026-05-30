@@ -25,8 +25,11 @@ CREATE TABLE IF NOT EXISTS tasks (
     priority_id INT REFERENCES priorities(id) ON DELETE RESTRICT,
     status_id INT REFERENCES statuses(id) ON DELETE RESTRICT,
     due_date DATE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Performance Indexes
 CREATE INDEX IX_tasks_category_id ON tasks(category_id);
+CREATE INDEX IX_tasks_priority_id ON tasks(priority_id);
 CREATE INDEX IX_tasks_status_id ON tasks(status_id);
+CREATE INDEX IX_tasks_created_at_desc ON tasks(created_at DESC); -- For optimizing GetAllAsync ordering
