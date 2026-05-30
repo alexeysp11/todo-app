@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A4B4C736-5A23-4585-BF94-8B340ADBE13B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.WinForms", "src\TodoApp.WinForms\TodoApp.WinForms.csproj", "{8E305F05-EA3D-4CA3-83AA-AC4D86FD6637}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.Tests.Unit", "tests\TodoApp.Tests.Unit\TodoApp.Tests.Unit.csproj", "{7C7E29FB-0AD6-432E-84B1-948A00DF8B87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.Tests.Integration", "tests\TodoApp.Tests.Integration\TodoApp.Tests.Integration.csproj", "{17495252-73FB-4E03-9EC4-B5CA8764049F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastructure", "infrastructure", "{BBABFFE2-C998-4E7C-A621-C0E147B08142}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "postgres", "postgres", "{2EAEADAF-C7A9-4AC6-A3CB-9C570AD29C67}"
+	ProjectSection(SolutionItems) = preProject
+		infrastructure\postgres\init-databases.sh = infrastructure\postgres\init-databases.sh
+		infrastructure\postgres\init.sql = infrastructure\postgres\init.sql
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E305F05-EA3D-4CA3-83AA-AC4D86FD6637}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E305F05-EA3D-4CA3-83AA-AC4D86FD6637}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E305F05-EA3D-4CA3-83AA-AC4D86FD6637}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E305F05-EA3D-4CA3-83AA-AC4D86FD6637}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C7E29FB-0AD6-432E-84B1-948A00DF8B87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C7E29FB-0AD6-432E-84B1-948A00DF8B87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C7E29FB-0AD6-432E-84B1-948A00DF8B87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C7E29FB-0AD6-432E-84B1-948A00DF8B87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17495252-73FB-4E03-9EC4-B5CA8764049F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17495252-73FB-4E03-9EC4-B5CA8764049F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17495252-73FB-4E03-9EC4-B5CA8764049F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17495252-73FB-4E03-9EC4-B5CA8764049F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8E305F05-EA3D-4CA3-83AA-AC4D86FD6637} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{7C7E29FB-0AD6-432E-84B1-948A00DF8B87} = {A4B4C736-5A23-4585-BF94-8B340ADBE13B}
+		{17495252-73FB-4E03-9EC4-B5CA8764049F} = {A4B4C736-5A23-4585-BF94-8B340ADBE13B}
+		{2EAEADAF-C7A9-4AC6-A3CB-9C570AD29C67} = {BBABFFE2-C998-4E7C-A621-C0E147B08142}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9EF83805-6707-4BB4-A84F-208CD2576626}
+	EndGlobalSection
+EndGlobal

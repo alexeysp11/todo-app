@@ -1,0 +1,20 @@
+services:
+  todo-db:
+    image: postgres
+    container_name: todo-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: todo_management_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      # Place the bash script in the autostart folder.
+      - ./infrastructure/postgres/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
+      # Place the SQL script in a temporary folder for reuse.
+      - ./infrastructure/postgres/init.sql:/tmp/init.sql
+    ports:
+      - "54321:5432"
