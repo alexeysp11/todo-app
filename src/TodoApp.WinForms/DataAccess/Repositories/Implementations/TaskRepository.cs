@@ -35,7 +35,7 @@ namespace TodoApp.WinForms.DataAccess.Repositories
                 {
                     if (await reader.ReadAsync().ConfigureAwait(false))
                     {
-                        return MapToTask(reader);
+                        return MapToTodoTask(reader);
                     }
                 }
             }
@@ -53,7 +53,7 @@ namespace TodoApp.WinForms.DataAccess.Repositories
             {
                 while (await reader.ReadAsync().ConfigureAwait(false))
                 {
-                    tasks.Add(MapToTask(reader));
+                    tasks.Add(MapToTodoTask(reader));
                 }
             }
             return tasks;
@@ -72,7 +72,7 @@ namespace TodoApp.WinForms.DataAccess.Repositories
                 {
                     while (await reader.ReadAsync().ConfigureAwait(false))
                     {
-                        tasks.Add(MapToTask(reader));
+                        tasks.Add(MapToTodoTask(reader));
                     }
                 }
             }
@@ -148,11 +148,9 @@ namespace TodoApp.WinForms.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Helper method for mapping an IDataReader string to a TodoTask object.
+        /// Helper method for mapping an <see cref="IDataReader"/> string to a <see cref="TodoTaskEntity"/> object.
         /// </summary>
-        /// <param name="reader"></param>
-        /// <returns></returns>
-        private TodoTaskEntity MapToTask(IDataReader reader)
+        private TodoTaskEntity MapToTodoTask(IDataReader reader)
         {
             return new TodoTaskEntity
             {

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Serilog;
 using TodoApp.WinForms.Models;
-using TodoApp.WinForms.Services;
 using TodoApp.WinForms.Services.Abstractions;
 
 namespace TodoApp.WinForms.Views

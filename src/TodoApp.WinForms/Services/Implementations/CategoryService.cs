@@ -53,6 +53,10 @@ namespace TodoApp.WinForms.Services.Implementations
             if (category.Name.Length > 50)
                 throw new ArgumentException("The category name must not exceed 50 characters.");
 
+            // Prevent system-reserved keyword collision.
+            if (category.Name.Equals("No Category", StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("The name 'No Category' is reserved by the system.");
+
             return _categoryRepository.UpdateAsync(category);
         }
 
