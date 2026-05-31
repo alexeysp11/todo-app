@@ -39,6 +39,8 @@ namespace TodoApp.WinForms
                 Application.Exit();
             };
 
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+
             // Global error handling in background threads (Tasks, thread pool)
             AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
             {

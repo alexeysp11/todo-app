@@ -31,8 +31,20 @@ namespace TodoApp.WinForms.Views
 
         private async void CategoryForm_Load(object sender, EventArgs e)
         {
-            _logger.Information("Loading CategoryForm UI.");
-            await RefreshCategoryListAsync();
+            try
+            {
+                _logger.Information("Loading CategoryForm UI.");
+
+                // Disable auto column generation to rely on Designer pre-configured setup
+                dgvCategories.AutoGenerateColumns = false;
+
+                await RefreshCategoryListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal(ex, "Critical error during CategoryForm initialization.");
+                MessageBox.Show("Failed to open category management interface.", "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private async Task RefreshCategoryListAsync()
@@ -44,10 +56,8 @@ namespace TodoApp.WinForms.Views
                 // Fetch categories asynchronously from the service layer
                 var categories = await _categoryService.GetAllCategoriesAsync();
 
-                dgvCategories.DataSource = null;
+                // Directly rebind data source without toggling null to eliminate UI flickering
                 dgvCategories.DataSource = categories.ToList();
-
-                ConfigureGridColumns();
             }
             catch (Exception ex)
             {
@@ -58,24 +68,6 @@ namespace TodoApp.WinForms.Views
             {
                 dgvCategories.Enabled = true;
             }
-        }
-
-        private void ConfigureGridColumns()
-        {
-            if (dgvCategories.Columns.Count == 0) return;
-
-            // Hide the technical ID column
-            if (dgvCategories.Columns["Id"] != null)
-                dgvCategories.Columns["Id"].Visible = false;
-
-            // Header styling
-            if (dgvCategories.Columns["Name"] != null)
-            {
-                dgvCategories.Columns["Name"].HeaderText = "Category Name";
-                dgvCategories.Columns["Name"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            }
-
-            dgvCategories.RowHeadersVisible = false;
         }
 
         private async void BtnAddCategory_Click(object sender, EventArgs e)
@@ -97,6 +89,10 @@ namespace TodoApp.WinForms.Views
                 await _categoryService.CreateCategoryAsync(newCategory);
 
                 txtCategoryName.Clear();
+                
+                // Return focus to allow fast consecutive typing
+                txtCategoryName.Focus();
+
                 _logger.Information("Category '{CategoryName}' created successfully.", categoryName);
 
                 await RefreshCategoryListAsync();
@@ -115,36 +111,34 @@ namespace TodoApp.WinForms.Views
 
         private async void BtnDeleteCategory_Click(object sender, EventArgs e)
         {
-            if (dgvCategories.CurrentRow?.DataBoundItem is CategoryEntity selectedCategory)
-            {
-                var dialogResult = MessageBox.Show(
-                    $"Are you sure you want to delete the category '{selectedCategory.Name}'?\n" +
-                    "All associated tasks will be reassigned to 'No Category'.",
-                    "Confirm Deletion",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning);
-
-                if (dialogResult == DialogResult.Yes)
-                {
-                    try
-                    {
-                        _logger.Information("User requested deletion of Category ID: {CategoryId}", selectedCategory.Id);
-
-                        await _categoryService.DeleteCategoryAsync(selectedCategory.Id);
-
-                        _logger.Information("Category ID: {CategoryId} successfully deleted.", selectedCategory.Id);
-                        await RefreshCategoryListAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error(ex, "Error occurred while deleting category ID: {CategoryId}", selectedCategory.Id);
-                        MessageBox.Show("Could not delete the category. It might be locked by the system.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-            else
+            if (!(dgvCategories.CurrentRow?.DataBoundItem is CategoryEntity selectedCategory))
             {
                 MessageBox.Show("Please select a category to delete.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DialogResult dialogResult = MessageBox.Show(
+                $"Are you sure you want to delete the category '{selectedCategory.Name}'?\n" +
+                "All associated tasks will be reassigned to 'No Category'.",
+                "Confirm Deletion",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (dialogResult != DialogResult.Yes) return;
+
+            try
+            {
+                _logger.Information("User requested deletion of Category ID: {CategoryId}", selectedCategory.Id);
+
+                await _categoryService.DeleteCategoryAsync(selectedCategory.Id);
+
+                _logger.Information("Category ID: {CategoryId} successfully deleted.", selectedCategory.Id);
+                await RefreshCategoryListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error occurred while deleting category ID: {CategoryId}", selectedCategory.Id);
+                MessageBox.Show("Could not delete the category. It might be locked by the system.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

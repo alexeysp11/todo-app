@@ -44,54 +44,61 @@ namespace TodoApp.WinForms.Views
 
         private async void TaskEditForm_Load(object sender, EventArgs e)
         {
-            _logger.Information("Loading TaskEditForm.");
-            ConfigureDatePicker();
-            ConfigureComboBoxStyles();
-
-            // Load drop-down reference data in parallel to save time
-            await Task.WhenAll(
-                LoadCategoriesAsync(),
-                LoadPrioritiesAsync(),
-                LoadStatusesAsync()
-            );
-
-            // Populate fields if we are in Edit Mode
-            if (_existingTask != null)
+            try
             {
-                Text = "TodoApp: Edit Task";
-                txtName.Text = _existingTask.Name;
-                txtDescription.Text = _existingTask.Description;
-                cmbCategory.SelectedValue = _existingTask.CategoryId ?? 0;
-                cmbPriority.SelectedValue = _existingTask.PriorityId;
-                cmbStatus.SelectedValue = _existingTask.StatusId;
+                _logger.Information("Loading TaskEditForm UI.");
+                ConfigureDatePicker();
+                ConfigureComboBoxStyles();
 
-                if (_existingTask.DueDate.HasValue)
-                    dtpDueDate.Value = _existingTask.DueDate.Value;
+                // Load drop-down reference data in parallel to optimize startup time
+                await Task.WhenAll(
+                    LoadCategoriesAsync(),
+                    LoadPrioritiesAsync(),
+                    LoadStatusesAsync()
+                );
+
+                // Populate UI fields based on operational mode
+                if (_existingTask != null)
+                {
+                    Text = "TodoApp: Edit Task";
+                    txtName.Text = _existingTask.Name;
+                    txtDescription.Text = _existingTask.Description;
+                    cmbCategory.SelectedValue = _existingTask.CategoryId ?? 0;
+                    cmbPriority.SelectedValue = _existingTask.PriorityId;
+                    cmbStatus.SelectedValue = _existingTask.StatusId;
+
+                    if (_existingTask.DueDate.HasValue)
+                        dtpDueDate.Value = _existingTask.DueDate.Value;
+                }
+                else
+                {
+                    Text = "TodoApp: Create New Task";
+                    if (cmbStatus.DataSource is List<TaskStatusEntity> statusList)
+                    {
+                        var defaultStatus = statusList.FirstOrDefault(s => s.Name.Equals("New", StringComparison.OrdinalIgnoreCase));
+                        if (defaultStatus != null) cmbStatus.SelectedValue = defaultStatus.Id;
+                    }
+
+                    // Hide status modification since a newborn task always starts as 'New'
+                    cmbStatus.Enabled = false;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Text = "TodoApp: Create New Task";
-
-                // Set default status to 'New' (assumed Id = 1 based on our init.sql)
-                cmbStatus.SelectedValue = 1;
-                
-                // Hide status choice during creation since a new task is always 'New'
-                cmbStatus.Enabled = false;
+                _logger.Fatal(ex, "Critical error during task creation/editing form startup.");
+                MessageBox.Show("Failed to load required reference data form.", "Initialization Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Close();
             }
         }
 
         private void ConfigureDatePicker()
         {
-            // Switch the format mode to Custom
             dtpDueDate.Format = DateTimePickerFormat.Custom;
-
-            // Define the strict European/Russian date mask
             dtpDueDate.CustomFormat = "dd.MM.yyyy";
         }
 
         private void ConfigureComboBoxStyles()
         {
-            // Lock keyboard text input for all reference dropdowns
             cmbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbPriority.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbStatus.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -101,17 +108,18 @@ namespace TodoApp.WinForms.Views
         {
             try
             {
-                List<CategoryEntity> categories = new List<CategoryEntity> { new CategoryEntity { Id = 0, Name = "No Category" } };
+                var categories = new List<CategoryEntity> { new CategoryEntity { Id = 0, Name = "No Category" } };
                 IEnumerable<CategoryEntity> dbCategories = await _categoryService.GetAllCategoriesAsync();
                 categories.AddRange(dbCategories);
 
                 cmbCategory.DataSource = categories;
-                cmbCategory.DisplayMember = "Name";
-                cmbCategory.ValueMember = "Id";
+                cmbCategory.DisplayMember = nameof(CategoryEntity.Name);
+                cmbCategory.ValueMember = nameof(CategoryEntity.Id);
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Failed to load categories into combobox.");
+                _logger.Error(ex, "Failed to aggregate categories into combobox.");
+                throw;
             }
         }
 
@@ -121,12 +129,13 @@ namespace TodoApp.WinForms.Views
             {
                 IEnumerable<PriorityEntity> priorities = await _priorityRepository.GetAllAsync();
                 cmbPriority.DataSource = priorities.ToList();
-                cmbPriority.DisplayMember = "Name";
-                cmbPriority.ValueMember = "Id";
+                cmbPriority.DisplayMember = nameof(PriorityEntity.Name);
+                cmbPriority.ValueMember = nameof(PriorityEntity.Id);
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Failed to load priorities.");
+                _logger.Error(ex, "Failed to load priorities data stream.");
+                throw;
             }
         }
 
@@ -136,28 +145,47 @@ namespace TodoApp.WinForms.Views
             {
                 IEnumerable<TaskStatusEntity> statuses = await _statusRepository.GetAllAsync();
                 cmbStatus.DataSource = statuses.ToList();
-                cmbStatus.DisplayMember = "Name";
-                cmbStatus.ValueMember = "Id";
+                cmbStatus.DisplayMember = nameof(TaskStatusEntity.Name);
+                cmbStatus.ValueMember = nameof(TaskStatusEntity.Id);
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Failed to load task statuses.");
+                _logger.Error(ex, "Failed to load task statuses infrastructure.");
+                throw;
             }
         }
 
         private async void BtnSave_Click(object sender, EventArgs e)
         {
+            string taskName = txtName.Text.Trim();
+
+            // UI-Level Guard Validation: avoid hitting database endpoints for basic empty string errors
+            if (string.IsNullOrWhiteSpace(taskName))
+            {
+                _logger.Warning("User attempted to save a task with an empty name field.");
+                MessageBox.Show("Task name is required and cannot be empty.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtName.Focus();
+                return;
+            }
+
+            // Safe extraction pattern to prevent InvalidCastException if data isn't loaded completely
+            if (!(cmbPriority.SelectedValue is int priorityId) || !(cmbStatus.SelectedValue is int statusId))
+            {
+                MessageBox.Show("Reference data is still loading. Please wait.", "System Busy", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             try
             {
                 TodoTaskEntity task = _existingTask ?? new TodoTaskEntity();
-                task.Name = txtName.Text.Trim();
+                task.Name = taskName;
                 task.Description = string.IsNullOrWhiteSpace(txtDescription.Text) ? null : txtDescription.Text.Trim();
-                task.CategoryId = (int)cmbCategory.SelectedValue == 0 ? (int?)null : (int)cmbCategory.SelectedValue;
-                task.PriorityId = (int)cmbPriority.SelectedValue;
-                task.StatusId = (int)cmbStatus.SelectedValue;
+                task.CategoryId = cmbCategory.SelectedValue is int catId && catId == 0 ? (int?)null : (int?)cmbCategory.SelectedValue;
+                task.PriorityId = priorityId;
+                task.StatusId = statusId;
                 task.DueDate = dtpDueDate.Value.Date;
 
-                _logger.Information("Saving task. Mode: {Mode}", _existingTask == null ? "Create" : "Update");
+                _logger.Information("Persisting task changes. Executing mode: {Mode}", _existingTask == null ? "Create" : "Update");
 
                 if (_existingTask == null)
                 {
@@ -173,13 +201,13 @@ namespace TodoApp.WinForms.Views
             }
             catch (ArgumentException ex)
             {
-                _logger.Warning("Task validation failure: {Message}", ex.Message);
+                _logger.Warning("Task operational parameters validation failure on BLL: {Message}", ex.Message);
                 MessageBox.Show(ex.Message, "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Unexpected error saving a task.");
-                MessageBox.Show("An unexpected system error occurred.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _logger.Error(ex, "Unexpected exception intercept while executing save task action.");
+                MessageBox.Show("An unexpected system error occurred while processing data.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

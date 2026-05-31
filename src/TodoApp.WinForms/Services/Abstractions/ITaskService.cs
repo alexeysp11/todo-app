@@ -8,6 +8,7 @@ namespace TodoApp.WinForms.Services.Abstractions
     {
         Task CreateTaskAsync(TodoTaskEntity task);
         Task<IEnumerable<TodoTaskEntity>> GetAllTasksAsync();
+        Task<IEnumerable<TodoTaskEntity>> GetByCategoryIdAsync(int categoryId);
         Task DeleteTaskAsync(int id);
         Task UpdateTaskAsync(TodoTaskEntity task);
     }

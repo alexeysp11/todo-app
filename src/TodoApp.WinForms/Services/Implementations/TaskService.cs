@@ -17,9 +17,10 @@ namespace TodoApp.WinForms.Services.Implementations
         }
 
         public Task<IEnumerable<TodoTaskEntity>> GetAllTasksAsync()
-        {
-            return _taskRepository.GetAllAsync();
-        }
+            => _taskRepository.GetAllAsync();
+
+        public Task<IEnumerable<TodoTaskEntity>> GetByCategoryIdAsync(int categoryId)
+            => _taskRepository.GetByCategoryIdAsync(categoryId);
 
         public Task CreateTaskAsync(TodoTaskEntity task)
         {
@@ -42,13 +43,9 @@ namespace TodoApp.WinForms.Services.Implementations
         }
 
         public Task DeleteTaskAsync(int id)
-        {
-            return _taskRepository.DeleteAsync(id);
-        }
+            => _taskRepository.DeleteAsync(id);
 
         public Task UpdateTaskAsync(TodoTaskEntity task)
-        {
-            return _taskRepository.UpdateAsync(task);
-        }
+            => _taskRepository.UpdateAsync(task);
     }
 }
